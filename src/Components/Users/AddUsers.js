@@ -1,19 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Card from "../Ui/Card";
 import classes from "./AddUser.module.css";
 import Button from "../Ui/Button";
 import ErrorModal from "../Ui/ErrorModal";
+import Wrapper from "../Helpers/Wrapper";
+
 const AddUsers = (props) => {
-  const [enteredUserName, setEnteredUsername] = useState("");
-  const [enteredUserAge, setEnteredUserAge] = useState("");
   const [error, setError] = useState();
+
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
 
   const addUserHandler = (event) => {
     event.preventDefault();
-    if (
-      enteredUserName.trim().length === 0 ||
-      enteredUserAge.trim().length === 0
-    ) {
+
+    const enteredName = nameInputRef.current.value;
+    const enteredAge = ageInputRef.current.value;
+    if (enteredName.trim().length === 0 || enteredAge.trim().length === 0) {
       setError({
         title: "Invalid Input",
         message: "Please  enter a valid name and age (non-empty values)",
@@ -22,7 +25,7 @@ const AddUsers = (props) => {
       return;
     }
 
-    if (+enteredUserAge < 1) {
+    if (+enteredAge < 1) {
       setError({
         title: "Invalid Input",
         message: "Please  enter a valid age (>=1)",
@@ -30,25 +33,25 @@ const AddUsers = (props) => {
       return;
     }
 
-    console.log(enteredUserAge, enteredUserName);
-    props.onAddUser(enteredUserName, enteredUserAge);
-    setEnteredUsername("");
-    setEnteredUserAge("");
+    // console.log(enteredAge, enteredName);
+    props.onAddUser(enteredName, enteredAge);
+    nameInputRef.current.value = "";
+    ageInputRef.current.value = "";
   };
 
-  const userNameChangeHandler = (event) => {
-    setEnteredUsername(event.target.value);
-  };
+  //   const userNameChangeHandler = (event) => {
+  //     setEnteredUsername(event.target.value);
+  //   };
 
-  const userAgeChangeHandler = (event) => {
-    setEnteredUserAge(event.target.value);
-  };
+  //   const userAgeChangeHandler = (event) => {
+  //     setEnteredUserAge(event.target.value);
+  //   };
 
   const errorHandler = () => {
     setError(null);
   };
   return (
-    <div>
+    <Wrapper>
       {error && (
         <ErrorModal
           title={error.title}
@@ -61,23 +64,21 @@ const AddUsers = (props) => {
           <label htmlFor='username'>Name</label>
           <input
             autoComplete='off'
-            value={enteredUserName}
-            onChange={userNameChangeHandler}
             id='username'
+            ref={nameInputRef}
             type='text'
           />
           <label htmlFor='age'>Age (Years)</label>
           <input
             autoComplete='off'
-            value={enteredUserAge}
-            onChange={userAgeChangeHandler}
             id='userage'
+            ref={ageInputRef}
             type='text'
           />
           <Button type='submit'>Add user</Button>
         </form>
       </Card>
-    </div>
+    </Wrapper>
   );
 };
 
